@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#11151c">
+<title>RICS — справочник команд</title>
+<style>
+:root{color-scheme:dark;--bg:#0e1218;--panel:#171e28;--panel2:#1d2632;--line:#2c3949;--text:#e8edf4;--muted:#9aa9ba;--accent:#78c7e8;--gold:#e4b86a;--red:#ef8888;--green:#8bd6a0}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#1a2937 0,#0e1218 55%);color:var(--text);font:15px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+.wrap{max-width:1120px;margin:auto;padding:32px 20px 70px}
+header{padding:26px 28px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(135deg,#1c2b39,#151b25);box-shadow:0 18px 55px #0005}
+.eyebrow{color:var(--accent);font-size:12px;font-weight:800;letter-spacing:.13em;text-transform:uppercase}
+h1{font-size:clamp(28px,5vw,44px);line-height:1.1;margin:8px 0 12px}header p{color:var(--muted);max-width:760px;margin:0}
+.meta{display:flex;gap:9px;flex-wrap:wrap;margin-top:18px}.pill{border:1px solid var(--line);background:#111923;border-radius:99px;padding:5px 10px;color:#cbd6e2;font-size:12px}
+.toolbar{position:sticky;top:0;z-index:5;margin:20px 0 18px;padding:12px 0;background:#0e1218eF;backdrop-filter:blur(12px)}
+.searchrow{display:flex;gap:10px}.search{width:100%;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:13px 15px;color:var(--text);font:inherit;outline:none}.search:focus{border-color:var(--accent);box-shadow:0 0 0 3px #78c7e822}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.filter{border:1px solid var(--line);background:var(--panel);color:var(--muted);border-radius:99px;padding:7px 12px;cursor:pointer;font:inherit;font-size:13px}.filter.active,.filter:hover{background:#234055;border-color:#477c99;color:#eaf8ff}
+.stats{color:var(--muted);font-size:12px;margin:10px 2px}
+section{margin:28px 0}.sectionhead{display:flex;align-items:center;gap:12px;margin-bottom:12px}.sectionhead h2{font-size:21px;margin:0}.count{font-size:12px;color:var(--muted);border:1px solid var(--line);padding:2px 8px;border-radius:99px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,320px),1fr));gap:11px}
+.card{background:linear-gradient(160deg,var(--panel),#141a23);border:1px solid var(--line);border-radius:13px;padding:15px 16px;min-width:0;transition:.15s}
+.card:hover{border-color:#4c7188;transform:translateY(-1px)}
+.cmdtop{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}.cmd{font:700 16px ui-monospace,SFMono-Regular,Consolas,monospace;color:#9bdcf4;overflow-wrap:anywhere}.copy{flex:none;background:#253544;border:1px solid #3a5267;color:#cfefff;border-radius:7px;padding:4px 8px;cursor:pointer;font-size:11px}.copy:hover{background:#31506a}
+.desc{color:#c4ced9;margin:9px 0 0}.detail{margin-top:10px;padding-top:9px;border-top:1px solid #2a3542;color:var(--muted);font-size:13px}.detail b{color:#dce5ed}.tag{display:inline-block;font-size:11px;border-radius:5px;padding:2px 6px;margin:8px 5px 0 0;background:#283544;color:#c5d7e5}.tag.warn{background:#482d30;color:#ffc2c2}.tag.dlc{background:#3b3424;color:#f2d59b}
+.empty{display:none;text-align:center;padding:35px;color:var(--muted);border:1px dashed var(--line);border-radius:14px}
+footer{margin-top:45px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12px}
+.notice{border-left:3px solid var(--gold);padding:10px 14px;background:#2a251c;border-radius:0 9px 9px 0;color:#e9d9b7;margin:18px 0}
+@media(max-width:600px){.wrap{padding:16px 12px 45px}header{padding:21px 18px}.toolbar{margin-top:12px}.sectionhead h2{font-size:18px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+ <div class="eyebrow">RimWorld Interactive Chat Service</div>
+ <h1>📚 Справочник команд RICS</h1>
+ <p>Русская версия списка чат-команд. Ищите по названию, назначению или категории. Названия команд и параметры оставлены на английском: именно их нужно вводить в чат.</p>
+ <div class="meta"><span class="pill">Основано на RICS 1.55</span><span class="pill">Поиск по командам</span><span class="pill">Адаптация под телефон</span></div>
+</header>
+<div class="notice"><b>Важно:</b> наличие команды в справочнике не гарантирует, что она включена на конкретном канале. Доступность зависит от настроек RICS, прав пользователя, экономики и установленных DLC. Команды с пометкой «выключена» сейчас отключены в списке команд RICS.</div>
+<div class="toolbar">
+ <div class="searchrow"><input id="q" class="search" type="search" placeholder="Найти команду, например: !mypawn, лечение, рейд…" autocomplete="off"></div>
+ <div class="filters" id="filters"></div>
+ <div class="stats" id="stats" aria-live="polite"></div>
+</div>
+<main id="content"></main>
+<div class="empty" id="empty">Ничего не найдено. Попробуйте изменить запрос или категорию.</div>
+<footer>
+ <p>Перевод и оформление справочника на основе <a href="https://github.com/ekudram/-cap-RimworldInteractiveChatServices/wiki/Commands" target="_blank" rel="noopener">официальной Wiki RICS — Commands</a>. Список соответствует содержимому страницы, проверенной для версии 1.55. Оригинальные названия команд не переводились.</p>
+ <p>RICS — сторонний мод для RimWorld. Этот справочник не является официальным сайтом разработчика.</p>
+</footer>
+</div>
+<script>
+const groups = [
+{ id:"mods", title:"👑 Команды модератора", note:"Требуются права модератора или администратора.", commands:[
+["!givecoins","Выдать монеты зрителю или всем зрителям.","!givecoins <viewer> <amount> · !givecoins all <amount> · !givecoins <amount>","amount alone gives to everyone"],
+["!givekarma","Выдать карму зрителю или всем зрителям.","!givekarma <viewer> <amount> · !givekarma all <amount> · !givekarma <amount>"],
+["!setkarma","Установить значение кармы конкретному зрителю.","!setkarma <viewer> <amount>"],
+["!togglestore","Включить или выключить команды покупок.","!togglestore · !togglestore on/enable · !togglestore off/disable","Управляет backpack, wear, equip, use, trait buys, pawn, surgery, event, weather, militaryaid, raid, revivepawn, healpawn и passion."],
+["!fixallpawns","Исправить назначения пешек.","Без параметров."],
+["!cleanlootboxes","Очистить записи лутбоксов, имя которых не совпадает с текущими зрителями.","!cleanlootboxes · !cleanlootboxes dry/dryrun · !cleanlootboxes all confirm","dry/dryrun только подсчитывает записи. all confirm удаляет все записи лутбоксов."],
+["!cleanviewers","Удалить зрителей без ID платформы.","!cleanviewers · !cleanviewers noplat/noplatform · !cleanviewers dry · !cleanviewers all really","Пропускает пользователей с более чем 5 монетами, любой кармой или назначенной пешкой. dry только считает; all really выполняет полную очистку."],
+["!setalias","Назначить, посмотреть или удалить дополнительный псевдоним команды.","!setalias <command> <alias> · !setalias <command> · !setalias <command> clear","Псевдоним не переименовывает исходную команду. Длина 2–16 букв или цифр, без !. Пример: !setalias raid r."],
+["!rban","Навсегда запретить зрителю пользоваться командами RICS.","!rban <viewer>","Только внутри RICS: это не бан Twitch, Kick или YouTube. Алиас: !ricsban."],
+["!runban","Снять RICS-бан и тайм-аут.","!runban <viewer>","Алиас: !ricsunban."],
+["!rto","Выдать тайм-аут внутри RICS.","!rto <user> [duration] · пример: !rto bob 10 или !rto bob 10m","По умолчанию 5 минут. Отсчёт идёт по реальному времени. Алиасы: !ricstimout, !rtimeout."]
+]},
+{ id:"economy", title:"💰 Экономика", commands:[
+["!bal","Показать баланс монет, карму, скорость начисления монет и информацию о текущем заработке."],
+["!whatiskarma","Сообщает, что команда отключена, и предлагает использовать !karmasettings.","","disabled"],
+["!karmasettings","Показать текущий диапазон кармы, её снижение со временем, награды за события и множители магазина."],
+["!openlootbox","Открыть ежедневный лутбокс."],
+["!giftcoins","Передать монеты другому зрителю.","","disabled"]
+]},
+{ id:"traits", title:"🧬 Черты характера", commands:[
+["!trait","Найти информацию о черте характера.","!trait <name> · !lookup trait <name>","Для поиска черты используется !trait или !lookup trait. Команды !traits в списке нет."],
+["!addtrait","Добавить черту своей пешке.","!addtrait <trait>"],
+["!removetrait","Удалить черту своей пешки.","!removetrait <trait>"],
+["!replacetrait","Заменить одну черту другой.","!replacetrait <old_trait> <new_trait>"],
+["!settraits","Добавить и заменить несколько черт за один раз.","!settraits <trait> <trait> ..."]
+]},
+{ id:"purchase", title:"🛒 Покупки и снаряжение", commands:[
+["!pricecheck","Узнать точную стоимость предмета.","!pricecheck <item>"],
+["!buy","Купить предмет или пешку в магазине.","!buy <item> [quantity] [quality] · пример: !buy assault_rifle excellent 1"],
+["!pawn","Купить пешку. Если включена только одна раса, команда сразу покупает пешку этой расы; если рас несколько — показывает первые 8 вариантов с ценами.","!pawn","Xenotype-цены смотрите через !xenotypes."],
+["!races","Показать до 15 включённых рас и их стоимость."],
+["!xenotypes","Показать доступные ксенотипы и цены. Если раса не указана, используется Human.","!xenotypes · !xenotypes <race>","Для указанной расы выводятся первые 10 вариантов."],
+["!use","Немедленно использовать предмет.","!use <item>"],
+["!equip","Экипировать предмет на свою пешку.","!equip <item>"],
+["!wear","Надеть одежду на свою пешку.","!wear <apparel>"],
+["!backpack","Добавить предмет в инвентарь своей пешки.","!backpack <item>"],
+["!surgery","Купить импланты и поставить операцию в очередь.","!surgery <implant>"]
+]},
+{ id:"events", title:"🌪️ Игровые события", commands:[
+["!event","Запустить игровое событие.","!event <event> · пример: !event psychic_soothe"],
+["!weather","Изменить погоду.","!weather <weather> · пример: !weather thunderstorm"],
+["!militaryaid","Вызвать военное подкрепление."],
+["!raid","Вызвать враждебный рейд на колонию."],
+["!raidinfo","Показать информацию о доступных типах рейдов."],
+["!joinraid","Присоединиться к активному Twitch-рейду, если такой сейчас идёт."]
+]},
+{ id:"info", title:"ℹ️ Информационные команды", commands:[
+["!purchaselist","Опубликовать ссылку на прайс-лист магазина, заданную в настройках мода."],
+["!factions","Показать видимые фракции, кроме фракции игрока, сгруппированные на союзников, нейтралов и врагов, с уровнем goodwill."],
+["!colonists","Показать количество колонистов, сколько среди них пешек зрителей, и количество животных колонии. Имена не перечисляются."],
+["!storage","Показать количество предмета на складах.","!storage <item> · пример: !storage steel"],
+["!research","Показать текущий исследовательский проект или состояние указанного проекта.","!research [project]"],
+["!study","Показать прогресс изучения Аномалии.","","dlc:Anomaly"],
+["!modinfo","Показать версию RICS и ссылку на страницу релизов GitHub."],
+["!modsettings","Показать скорость начисления монет, максимум кармы, кулдаун событий, лимит покупок и ограничение на черты."],
+["!wealth","Показать богатство колонии."],
+["!storyteller","Показать текущего рассказчика и сложность игры, например Cassandra / Adventure Story."],
+["!help","Отправить ссылку на полный список команд."],
+["!commands","Показать названия команд, которыми конкретный зритель имеет право пользоваться."],
+["!lookup","Искать предметы, события, погоду, черты, расы или ксенотипы.","!lookup <type> <name> · пример: !lookup item medicine · !lookup race","!lookup race показывает включённые расы."]
+]},
+{ id:"pawn", title:"👤 Управление пешкой", commands:[
+["!mypawn","Показать информацию о своей пешке. У команды есть дополнительные разделы и подкоманды.","!mypawn <subcommand>","Подкоманды перечислены ниже."],
+["!mypawn mechs","Показать механоидов под вашим управлением.","!mypawn mechs · также: mech, mechanoid, mechanoids","dlc:Biotech"],
+["!mypawn psycasts","Показать пси-способности.","!mypawn psycasts · !mypawn psycast <class> · также: psyfocus","dlc:Royalty"],
+["!mypawn genes","Показать ксенотип и гены.","!mypawn genes · также: xeno, xenotype","dlc:Biotech"],
+["!mypawn family / friends / rivals","Показать списки родственников, друзей или соперников.","!mypawn family · !mypawn friends · !mypawn rivals","Также принимаются kin, kith, enemies, adversaries."],
+["!mypawn owned","Показать оружие и одежду, принадлежащие этой пешке, если владение включено.","!mypawn owned · !mypawn owned weapons · !mypawn owned armor"],
+["!mypawn disown","Отказаться от владения предметом.","!mypawn disown <number or name>","Сначала посмотрите предметы через !mypawn owned."],
+["!mypawn job","Показать, чем пешка занимается прямо сейчас.","!mypawn job · также: action"],
+["!pawncheck","Показать только травмы пешки другого зрителя.","!pawncheck <viewer>","Добавлена в RICS 1.46."],
+["!leave","Освободить назначенную вам пешку."],
+["!rescueme","Команда для подписчиков: вернуть захваченную или похищенную пешку на мировой карте либо отправить оставленную пешку домой в спасательной капсуле.","!rescueme · !rescueme status","Стоимость по умолчанию: 800 монет за спасение захваченной/похищенной пешки и 400 за возвращение оставленной. status проверяет ситуацию бесплатно. Для мёртвых пешек используйте !revivepawn."],
+["!revivepawn","Воскресить пешку.","!revivepawn [selected/all/viewers]"],
+["!healpawn","Лечить пешек с помощью сыворотки механида-целителя.","!healpawn · !healpawn all · !healpawn 3 @user · !healpawn all @user · !healpawn allpawns","Без аргументов — одна доза своей пешке. all — лечить свою пешку дозами. Число и @user — заданное количество доз другой пешке. all @user — лечить до полного здоровья или пока хватает монет. allpawns — лечить все назначенные пешки зрителей."],
+["!dye","Покрасить свою одежду."],
+["!setfavoritecolor","Установить любимый цвет своей пешки."],
+["!passion","Поставить ставку на шанс повысить страсть к навыку.","!passion <skill>","В RICS 1.55 критический успех всегда приводит к двум огонькам страсти: отсутствие страсти становится двумя, один огонёк — двумя. Два огонька не превращаются в один."],
+["!shufflechildhood","Заплатить монеты за новую предысторию детства, подходящую этой пешке."],
+["!shuffleadulthood","Заплатить монеты за новую предысторию взросления, подходящую этой пешке."]
+]},
+{ id:"queue", title:"📊 Очередь на получение пешки", commands:[
+["!joinqueue","Встать в очередь на получение пешки."],
+["!leavequeue","Покинуть очередь на получение пешки."],
+["!queuestatus","Проверить своё место в очереди."],
+["!acceptpawn","Принять предложение пешки."]
+]},
+{ id:"social", title:"💬 Социальные взаимодействия", commands:[
+["!chitchat","Непринуждённая беседа с колонистом.","","cost:10 монет"],
+["!deeptalk","Серьёзный разговор с колонистом.","","cost:15 монет"],
+["!insult","Оскорбить колониста.","","cost:5 монет; karma:Всегда расходует карму: базово 10, больше, если цель несчастна. Команда блокируется, если действие опустит карму ниже допустимого минимума."],
+["!flirt","Попытаться завязать романтические отношения.","","cost:20 монет; karma:При отказе или нежелательной попытке расходуется карма (базово 8)."],
+["!reassure","Утешить колониста.","","cost:12 монет; dlc:Ideology"],
+["!nuzzle","Приласкать животное колонии.","","cost:8 монет; Если имя не указано, выбирается животное, с которым есть связь, а затем случайное."],
+["!animalchat","Поговорить с животным колонии.","","cost:10 монет; Выбор животного работает так же, как у !nuzzle."],
+["!marry","Сделать предложение о браке.","","cost:50 монет; karma:При отказе или нежелательном предложении расходуется карма (базово 12)."],
+["!buildrapport","Улучшить отношения с персонажем.","","cost:25 монет; dlc:Ideology"],
+["!convert","Обратить персонажа в свою идеологию.","","cost:30 монет; karma:Всегда расходует карму (базово 12); dlc:Ideology"]
+]},
+{ id:"test", title:"🧪 Тестовые команды", commands:[
+["!hello","Простая тестовая команда."],
+["!CaptoLamia","Тестовая команда CaptoLamia."]
+]}
+];
+const filters=[["all","Все категории"],...groups.map(g=>[g.id,g.title.replace(/^\\S+\\s/,"")])];
+let active="all";
+const q=document.getElementById("q"), content=document.getElementById("content"), empty=document.getElementById("empty"), stats=document.getElementById("stats"), filterBox=document.getElementById("filters");
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+filters.forEach(([id,label])=>{const b=document.createElement("button");b.className="filter"+(id==="all"?" active":"");b.textContent=label;b.onclick=()=>{active=id;document.querySelectorAll(".filter").forEach(x=>x.classList.toggle("active",x===b));render()};filterBox.append(b)});
+function render(){
+ const term=q.value.trim().toLowerCase();content.innerHTML="";let shown=0,total=0;
+ groups.forEach(g=>{if(active!=="all"&&active!==g.id)return;const matches=g.commands.filter(c=>c.join(" ").toLowerCase().includes(term));if(!matches.length)return;shown+=matches.length;total+=g.commands.length;
+ const sec=document.createElement("section");sec.innerHTML=`<div class="sectionhead"><h2>${g.title}</h2><span class="count">${matches.length}</span></div><div class="grid"></div>`;const grid=sec.querySelector(".grid");
+ matches.forEach(c=>{let tags="";let extra="";(c[3]||"").split(";").filter(Boolean).forEach(t=>{if(t.startsWith("cost:"))tags+=`<span class="tag">${esc(t.slice(5))}</span>`;else if(t.startsWith("karma:"))extra+=`<div class="detail"><b>Карма:</b> ${esc(t.slice(6))}</div>`;else if(t.startsWith("dlc:"))tags+=`<span class="tag dlc">DLC: ${esc(t.slice(4))}</span>`;else if(t==="disabled")tags+=`<span class="tag warn">Отключена в списке команд</span>`;else tags+=`<span class="tag">${esc(t)}</span>`});
+ const card=document.createElement("article");card.className="card";card.innerHTML=`<div class="cmdtop"><div class="cmd">${esc(c[0])}</div><button class="copy" type="button" title="Скопировать команду">Копировать</button></div><p class="desc">${esc(c[1])}</p>${c[2]?`<div class="detail"><b>Использование:</b><br><code>${esc(c[2])}</code></div>`:""}${extra}${tags}`;card.querySelector("button").onclick=async()=>{try{await navigator.clipboard.writeText(c[0]);card.querySelector("button").textContent="Скопировано";setTimeout(()=>card.querySelector("button").textContent="Копировать",1200)}catch{card.querySelector("button").textContent="Не удалось"}};grid.append(card)});content.append(sec)});
+ empty.style.display=shown?"none":"block";stats.textContent=`Показано команд: ${shown} · Всего в выбранных категориях: ${total}`;
+}
+q.addEventListener("input",render);render();
+</script>
+</body>
+</html>
